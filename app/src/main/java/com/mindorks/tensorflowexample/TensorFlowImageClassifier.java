@@ -28,6 +28,7 @@ import java.util.Vector;
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
 
 import android.content.res.AssetManager;
+import android.os.Environment;
 import android.support.v4.os.TraceCompat;
 import android.util.Log;
 
@@ -57,6 +58,9 @@ public class TensorFlowImageClassifier implements Classifier {
     private String[] outputNames;
 
     private TensorFlowInferenceInterface inferenceInterface;
+
+    // location of model and label
+    private static final String model_dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/";
 
     private boolean runStats = false;
 
@@ -88,8 +92,14 @@ public class TensorFlowImageClassifier implements Classifier {
 
         // Read the label names into memory.
         // TODO(andrewharp): make this handle non-assets.
-        String actualFilename = labelFilename.split("file:///android_asset/")[1];
+        //String actualFilename = labelFilename.split("file:///android_asset/")[1];
+        //String actualFilename = labelFilename.split("/storage/emulated/0/Download/")[1];
+        String actualFilename = labelFilename.split(model_dir)[1];
+
+
         Log.i(TAG, "Reading labels from: " + actualFilename);
+
+        //TODO: Read file NOT from assetManager, but from model_dir folder
         BufferedReader br = null;
         br = new BufferedReader(new InputStreamReader(assetManager.open(actualFilename)));
         String line;

@@ -18,6 +18,7 @@ package com.mindorks.tensorflowexample;
 
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -27,10 +28,12 @@ import android.widget.TextView;
 import com.mindorks.tensorflowexample.view.DrawModel;
 import com.mindorks.tensorflowexample.view.DrawView;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
 
@@ -55,9 +58,15 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private static final String INPUT_NAME = "input";
     private static final String OUTPUT_NAME = "output";
 
-    private static final String MODEL_FILE = "file:///android_asset/mnist_model_graph.pb";
-    private static final String LABEL_FILE =
-            "file:///android_asset/graph_label_strings.txt";
+    //TODO: load from downloadable folder
+    //private static final String MODEL_FILE = "file:///android_asset/mnist_model_graph.pb";
+    //private static final String LABEL_FILE = "file:///android_asset/graph_label_strings.txt";
+
+    //Load models from other folders, e.g., Download (/storage/emulated/0/Download/)
+    //TODO: Now we still need to give permission on phone setting
+    private static final String model_dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+    private static final String MODEL_FILE = model_dir + "/mnist_model_graph.pb";
+    private static final String LABEL_FILE = model_dir + "/graph_label_strings.txt";
 
     private Classifier classifier;
     private Executor executor = Executors.newSingleThreadExecutor();
@@ -97,8 +106,27 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     }
 
     private void initTensorFlowAndLoadModel() {
+        // Show files in the Download folder
+        // TODO: Now we still need to give permission on phone setting
+        Log.i(TAG, "MODEL_FILE = " + model_dir);
+
+        File file = new File(model_dir);
+        File filesInDirectory[] = file.listFiles();
+
+        if (filesInDirectory != null) {
+            for (File aFilesInDirectory : filesInDirectory) {
+                Log.i(TAG, "- File Name = " + aFilesInDirectory.getName());
+            }
+        }else{
+            Log.i(TAG, model_dir + " is NULL...");
+        }
+
+        Log.i(TAG, "-- MODEL_FILE = " + MODEL_FILE);
+        Log.i(TAG, "-- LABEL_FILE = " + LABEL_FILE);
+
         executor.execute(new Runnable() {
             @Override
+
             public void run() {
                 try {
                     classifier = TensorFlowImageClassifier.create(
