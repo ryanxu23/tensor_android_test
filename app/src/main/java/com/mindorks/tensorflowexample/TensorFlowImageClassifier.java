@@ -17,7 +17,9 @@
 package com.mindorks.tensorflowexample;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -91,23 +93,32 @@ public class TensorFlowImageClassifier implements Classifier {
         c.outputName = outputName;
 
         // Read the label names into memory.
-        // TODO(andrewharp): make this handle non-assets.
         //String actualFilename = labelFilename.split("file:///android_asset/")[1];
         //String actualFilename = labelFilename.split("/storage/emulated/0/Download/")[1];
-        String actualFilename = labelFilename.split(model_dir)[1];
+        //String actualFilename = labelFilename.split(model_dir)[1];
 
+        String actualFilename = "/storage/emulated/0/Download/graph_label_strings.txt";
 
         Log.i(TAG, "Reading labels from: " + actualFilename);
 
-        //TODO: Read file NOT from assetManager, but from model_dir folder
+        //Read file NOT from assetManager, but from model_dir folder
         BufferedReader br = null;
-        br = new BufferedReader(new InputStreamReader(assetManager.open(actualFilename)));
+        //br = new BufferedReader(new InputStreamReader(assetManager.open(actualFilename)));
+
+        InputStream inputStream = new FileInputStream(actualFilename);
+        br = new BufferedReader(new InputStreamReader(inputStream));
+
+
+        //is = new FileInputStream(model);
         String line;
         while ((line = br.readLine()) != null) {
             c.labels.add(line);
         }
         br.close();
 
+        Log.i(TAG, "****** label file is " + c.labels);
+
+        //TensorFlowInferenceInterface allows models to be loaded in both Asset and other locations on disk
         c.inferenceInterface = new TensorFlowInferenceInterface(assetManager, modelFilename);
 
         // The shape of the output is [N, NUM_CLASSES], where N is the batch size.

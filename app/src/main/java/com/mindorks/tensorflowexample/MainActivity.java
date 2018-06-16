@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import android.util.Log;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
 
